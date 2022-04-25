@@ -1,7 +1,10 @@
 document.addEventListener("DOMContentLoaded", listTabs);
 
 function getCurrentWindowTabs() {
-    return browser.tabs.query({currentWindow: true});
+    return browser.tabs.query({
+        currentWindow: true,
+        url: "*://*.wikipedia.org/*"
+    });
   }
 
   function listTabs() {
@@ -14,13 +17,15 @@ function getCurrentWindowTabs() {
 
        for (let tab of tabs) {
        
-        let tabLink = document.createElement('li');
+        let tabItem = document.createElement('li');
+        let tabLink = document.createElement('a');
     
         tabLink.textContent = tab.title || tab.id;
     
         tabLink.setAttribute('href', tab.id);
         tabLink.classList.add('switch-tabs');
-        currentTabs.appendChild(tabLink);
+        tabItem.appendChild(tabLink);
+        currentTabs.appendChild(tabItem);
     
         counter += 1;
       }
