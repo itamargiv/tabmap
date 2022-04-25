@@ -23,7 +23,7 @@ function getCurrentWindowTabs() {
 }
 
 function filterTabs(tabs) {
-    return tabs.filter(tab => excludedNamespaces.every(ns => !tab.url.includes(`/wiki/${ns}:`)));
+    return tabs.filter(tab => !/\/Main_Page$/.test(tab.url) && excludedNamespaces.every(ns => !tab.url.includes(`/wiki/${ns}:`)));
 }
 
 function createTabList(tabs) {
