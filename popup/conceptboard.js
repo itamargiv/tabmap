@@ -1,34 +1,51 @@
-document.addEventListener("DOMContentLoaded", listTabs);
+const excludedNamespaces = [
+    'Media', 'Talk', 'Special',
+    'Category', 'Category_talk',
+    'Draft', 'Draft_talk',
+    'File', 'File_talk',
+    'Gadget', 'Gadget_talk',
+    'Gadget_definition', 'Gadget_definition_talk',
+    'Help', 'Help_talk', 
+    'MediaWiki', 'MediaWiki_talk',
+    'Module', 'Module_talk',
+    'Portal', 'Portal_talk',
+    'Template', 'Template_talk',
+    'TimedText', 'TimedText_talk',
+    'User', 'User_talk',
+    'Wikipedia', 'Wikipedia_talk'
+];
 
 function getCurrentWindowTabs() {
     return browser.tabs.query({
         currentWindow: true,
-        url: "*://*.wikipedia.org/*"
+        url: "*://*.wikipedia.org/wiki/*"
     });
-  }
+}
 
-  function listTabs() {
-    getCurrentWindowTabs().then((tabs) => {
-       let tabsList = document.getElementById('tabs-list');
-       let currentTabs = document.createDocumentFragment();
-       let counter = 0;
-   
-       tabsList.textContent = '';
+function filterTabs(tabs) {
+    return tabs.filter(tab => excludedNamespaces.every(ns => !tab.url.includes(`/wiki/${ns}:`)));
+}
 
-       for (let tab of tabs) {
-       
-        let tabItem = document.createElement('li');
-        let tabLink = document.createElement('a');
-    
-        tabLink.textContent = tab.title || tab.id;
-    
-        tabLink.setAttribute('href', tab.id);
-        tabLink.classList.add('switch-tabs');
-        tabItem.appendChild(tabLink);
-        currentTabs.appendChild(tabItem);
-    
-        counter += 1;
-      }
-      tabsList.appendChild(currentTabs);
-    });
-  }      
+function createTabList(tabs) {
+    const tabNodes = {
+        list: document.getElementById('tabs-list'),
+        items: document.createDocumentFragment()
+    }
+
+    for (let tab of tabs) {
+        let itemNode = document.createElement('li');
+        itemNode.textContent = tab.title || tab.id;
+        itemNode.classList.add('article-tab');
+        tabNodes.items.appendChild(itemNode);
+    }
+
+    tabNodes.list.appendChild(tabNodes.items);
+}
+
+function listTabs() {
+    getCurrentWindowTabs()
+        .then(filterTabs)
+        .then(createTabList);
+}
+
+document.addEventListener("DOMContentLoaded", listTabs);
