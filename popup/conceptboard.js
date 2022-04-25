@@ -15,6 +15,10 @@ const excludedNamespaces = [
     'Wikipedia', 'Wikipedia_talk'
 ];
 
+const excludedPages = [ 
+    'Main_Page'
+];
+
 function getCurrentWindowTabs() {
     return browser.tabs.query({
         currentWindow: true,
@@ -22,8 +26,12 @@ function getCurrentWindowTabs() {
     });
 }
 
-function filterTabs(tabs) {
-    return tabs.filter(tab => !/\/Main_Page$/.test(tab.url) && excludedNamespaces.every(ns => !tab.url.includes(`/wiki/${ns}:`)));
+function filterNamespaces(tabs) {
+    return tabs.filter(tab => excludedNamespaces.every(ns => !tab.url.includes(`/wiki/${ns}:`)));
+}
+
+function filterPages(tabs) {
+    return tabs.filter(tab => excludedPages.every(page => !tab.url.includes(`/wiki/${page}`)));
 }
 
 function createTabList(tabs) {
@@ -44,7 +52,8 @@ function createTabList(tabs) {
 
 function listTabs() {
     getCurrentWindowTabs()
-        .then(filterTabs)
+        .then(filterNamespaces)
+        .then(filterPages)
         .then(createTabList);
 }
 
