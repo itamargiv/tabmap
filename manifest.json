@@ -1,0 +1,20 @@
+{
+
+    "manifest_version": 2,
+    "name": "tabmap",
+    "version": "1.0",
+  
+    "description": "Silly prototype",
+  
+    "icons": {
+      "48": "icons/uml.png"
+    },
+  
+    "content_scripts": [
+      {
+        "matches": ["*://*.wikipedia.org/*"],
+        "js": ["tabmap.js"]
+      }
+    ],
+  }
+  
