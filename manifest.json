@@ -16,5 +16,15 @@
         "js": ["tabmap.js"]
       }
     ],
+    "permissions": [
+      "<all_urls>",
+      "tabs"
+    ],
+    "browser_action": {
+      "browser_style": true,
+      "default_title": "Wikipedia to Wikidata board",
+      "default_popup": "popup/conceptboard.html"
+    }
+  
   }
   
