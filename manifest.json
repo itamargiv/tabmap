@@ -7,9 +7,9 @@
     "description": "Silly prototype",
   
     "icons": {
-      "48": "icons/uml.png"
+      "48": "icons/wikidata-heart-48.png",
+      "96": "icons/wikidata-heart-96.png"
     },
-  
     "content_scripts": [
       {
         "matches": ["*://*.wikipedia.org/*"],
@@ -21,8 +21,7 @@
       "tabs"
     ],
     "browser_action": {
-      "browser_style": true,
-      "default_title": "Wikipedia to Wikidata board",
+      "default_title": "TabMap",
       "default_popup": "popup/conceptboard.html"
     }
   
