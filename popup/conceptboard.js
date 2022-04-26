@@ -52,10 +52,10 @@ function createLinkedNodes({nodes, connections}) {
 
     document.body.appendChild(board);
 
-    return nodes;
+    return {nodes, connections};
 }
 
-function createTabList(nodes) {
+function createTabList({nodes, connections}) {
     const tabNodes = {
         list: document.getElementById('tabs-list'),
         items: document.createDocumentFragment()
@@ -69,6 +69,7 @@ function createTabList(nodes) {
     }
 
     tabNodes.list.appendChild(tabNodes.items);
+    return {nodes, connections};
 }
 
 async function getWikibaseIds(tabs) {
@@ -130,7 +131,45 @@ function listTabs() {
         .then(getWikibaseIds)
         .then(getNodeConnections)
         .then(createLinkedNodes)
-        .then(createTabList);
+        .then(createTabList)
+        .then(createGoDiagram);
+}
+
+function createGoDiagram({nodes, connections}) {
+    var $ = go.GraphObject.make;
+    myDiagram = $(go.Diagram, "myDiagramDiv",
+    {
+        layout: $(go.CircularLayout)
+    });
+
+    myDiagram.nodeTemplate =
+    $(go.Node, "Auto",
+      new go.Binding("location", "loc", go.Point.parse),
+      $(go.Shape, "RoundedRectangle", { fill: "white" }),
+      $(go.TextBlock, { margin: 5 },
+        new go.Binding("text", "text"))
+    );
+
+    myDiagram.linkTemplate =
+        $(go.Link, { curve: go.Link.Bezier },
+        $(go.Shape),
+        $(go.Shape, { toArrow: "Standard" }),
+        $(go.TextBlock, { textAlign: "center" },  // centered multi-line text
+        new go.Binding("text", "text"))
+    );
+
+    const nodeDataArray = [];
+    nodes.forEach(node => nodeDataArray.push({ key: node.qid, text: node.title + ' (' + node.qid + ')' }) )
+
+    const linkDataArray = [];
+    connections.forEach( connection => linkDataArray.push({
+        to : connection.to,
+        from: connection.from,
+        text: connection.label + ' (' + connection.property + ')'
+    }));
+
+    console.log( connections );
+    myDiagram.model = new go.GraphLinksModel( nodeDataArray, linkDataArray );
 }
 
 document.addEventListener("DOMContentLoaded", listTabs);
