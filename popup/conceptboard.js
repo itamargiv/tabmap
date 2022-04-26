@@ -69,6 +69,7 @@ function createTabList(nodes) {
     }
 
     tabNodes.list.appendChild(tabNodes.items);
+    return nodes;
 }
 
 async function getWikibaseIds(tabs) {
@@ -130,7 +131,24 @@ function listTabs() {
         .then(getWikibaseIds)
         .then(getNodeConnections)
         .then(createLinkedNodes)
-        .then(createTabList);
+        .then(createTabList)
+        .then(createGoDiagram);
+}
+
+function createGoDiagram(tabs) {
+    var $ = go.GraphObject.make;
+    myDiagram = $(go.Diagram, "myDiagramDiv");
+
+    const nodeDataArray = [];
+    tabs.forEach(tab => nodeDataArray.push({ key: tab.title + ' (' + tab.qid + ')' }) )
+
+    // TODO: add links between elements using this variable and format
+    var linkDataArray = [
+        {
+            to: 'Beta', from: 'Alpha'
+        }
+    ];
+    myDiagram.model = new go.GraphLinksModel( nodeDataArray, linkDataArray );
 }
 
 document.addEventListener("DOMContentLoaded", listTabs);

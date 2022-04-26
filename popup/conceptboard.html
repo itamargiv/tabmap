@@ -7,7 +7,7 @@
         <link rel="stylesheet" href="./conceptboard.css"/>
       </head>
 
-    <body>
+    <body onload="createGoDiagram()">
 
       <div class="panel">
         <div class="panel-section panel-section-header">
@@ -19,11 +19,17 @@
 
         <div class="switch-tabs">
 
-         <ul id="tabs-list"></div>
+          <ul id="tabs-list"></ul>
+
+         <!-- The DIV for a Diagram needs an explicit size or else we will not see anything.-->
+          <div id="myDiagramDiv"
+            style="width:400px; height:150px; background-color: #DAE4E4;">
+          </div>
 
         </div>
       </div>
 
+      <script src="go-debug.js"></script>
       <script src="conceptboard.js"></script>
 
     </body>
