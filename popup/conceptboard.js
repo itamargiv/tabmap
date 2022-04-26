@@ -52,10 +52,10 @@ function createLinkedNodes({nodes, connections}) {
 
     document.body.appendChild(board);
 
-    return nodes;
+    return {nodes, connections};
 }
 
-function createTabList(nodes) {
+function createTabList({nodes, connections}) {
     const tabNodes = {
         list: document.getElementById('tabs-list'),
         items: document.createDocumentFragment()
@@ -69,7 +69,7 @@ function createTabList(nodes) {
     }
 
     tabNodes.list.appendChild(tabNodes.items);
-    return nodes;
+    return {nodes, connections};
 }
 
 async function getWikibaseIds(tabs) {
@@ -135,19 +135,37 @@ function listTabs() {
         .then(createGoDiagram);
 }
 
-function createGoDiagram(tabs) {
+function createGoDiagram({nodes, connections}) {
     var $ = go.GraphObject.make;
     myDiagram = $(go.Diagram, "myDiagramDiv");
 
-    const nodeDataArray = [];
-    tabs.forEach(tab => nodeDataArray.push({ key: tab.title + ' (' + tab.qid + ')' }) )
+    myDiagram.nodeTemplate =
+    $(go.Node, "Auto",
+      new go.Binding("location", "loc", go.Point.parse),
+      $(go.Shape, "RoundedRectangle", { fill: "white" }),
+      $(go.TextBlock, { margin: 5 },
+        new go.Binding("text", "text"))
+    );
 
-    // TODO: add links between elements using this variable and format
-    var linkDataArray = [
-        {
-            to: 'Beta', from: 'Alpha'
-        }
-    ];
+    myDiagram.linkTemplate =
+        $(go.Link, { curve: go.Link.Bezier },
+        $(go.Shape),
+        $(go.Shape, { toArrow: "Standard" }),
+        $(go.TextBlock, { textAlign: "center" },  // centered multi-line text
+        new go.Binding("text", "text"))
+    );
+
+    const nodeDataArray = [];
+    nodes.forEach(node => nodeDataArray.push({ key: node.qid, text: node.title + ' (' + node.qid + ')' }) )
+
+    const linkDataArray = [];
+    connections.forEach( connection => linkDataArray.push({
+        to : connection.to,
+        from: connection.from,
+        text: connection.label + ' (' + connection.property + ')'
+    }));
+
+    console.log( connections );
     myDiagram.model = new go.GraphLinksModel( nodeDataArray, linkDataArray );
 }
 
