@@ -110,7 +110,7 @@ function mapBindings(binding) {
 
 async function getNodeConnections(nodes){
     const itemIds = nodes.map(({qid}) => `wd:${qid}`).join(' ');
-    const query = `SELECT ?property ?propertyLabel ?subject ?object WHERE { VALUES ?subject { ${itemIds} } VALUES ?object { ${itemIds} } ?object ?wdt ?subject. ?property wikibase:directClaim ?wdt. SERVICE wikibase:label { bd:serviceParam wikibase:language "en,en". } }`;
+    const query = `SELECT ?property ?propertyLabel ?subject ?object WHERE { VALUES ?subject { ${itemIds} } VALUES ?object { ${itemIds} } ?subject ?wdt ?object. ?property wikibase:directClaim ?wdt. SERVICE wikibase:label { bd:serviceParam wikibase:language "en,en". } }`;
     
     const res = await fetch(`https://query.wikidata.org/sparql?query=${query}`, {
         headers: {
