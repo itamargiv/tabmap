@@ -34,15 +34,36 @@ function filterPages(tabs) {
     return tabs.filter(tab => excludedPages.every(page => !tab.url.includes(`/wiki/${page}`)));
 }
 
-function createTabList(tabs) {
+function createLinkedNodes({nodes, connections}) {
+    const board = document.createElement('pre');
+
+    const nodeMap = nodes.reduce((acc, node) => {
+        acc[node.qid] = node;
+        return acc;
+    }, {});
+
+    for (let connection of connections) {
+        const from = nodeMap[connection.from];
+        const to = nodeMap[connection.to];
+
+        const line = `${from.title} (${from.qid}) -- ${connection.label} (${connection.property}) --> ${to.title} (${to.qid})\n`;
+        board.textContent += line;
+    }
+
+    document.body.appendChild(board);
+
+    return nodes;
+}
+
+function createTabList(nodes) {
     const tabNodes = {
         list: document.getElementById('tabs-list'),
         items: document.createDocumentFragment()
     }
 
-    for (let tab of tabs) {
+    for (let node of nodes) {
         let itemNode = document.createElement('li');
-        itemNode.textContent = tab.title + ' (' + tab.qid + ')';
+        itemNode.textContent = node.title + ' (' + node.qid + ')';
         itemNode.classList.add('article-tab');
         tabNodes.items.appendChild(itemNode);
     }
@@ -71,11 +92,44 @@ async function getWikibaseIds(tabs) {
     return data.flat();
 }
 
+function mapBindings(binding) {
+
+    const [from, to, property] = [binding.object, binding.subject, binding.property].map(({value}) => {
+        const uri = new URL(value);
+
+        return uri.pathname.split('/')[2];
+    });
+
+    return {
+        from,
+        to,
+        property,
+        label: binding.propertyLabel.value
+    };
+}
+
+async function getNodeConnections(nodes){
+    const itemIds = nodes.map(({qid}) => `wd:${qid}`).join(' ');
+    const query = `SELECT ?property ?propertyLabel ?subject ?object WHERE { VALUES ?subject { ${itemIds} } VALUES ?object { ${itemIds} } ?object ?wdt ?subject. ?property wikibase:directClaim ?wdt. SERVICE wikibase:label { bd:serviceParam wikibase:language "en,en". } }`;
+    
+    const res = await fetch(`https://query.wikidata.org/sparql?query=${query}`, {
+        headers: {
+            'Accept': 'application/sparql-results+json'
+        },
+    });
+    const data = await res.json();
+    const connections = data.results.bindings.map(mapBindings);
+
+    return {nodes, connections};
+}
+
 function listTabs() {
     getCurrentWindowTabs()
         .then(filterNamespaces)
         .then(filterPages)
         .then(getWikibaseIds)
+        .then(getNodeConnections)
+        .then(createLinkedNodes)
         .then(createTabList);
 }
 
