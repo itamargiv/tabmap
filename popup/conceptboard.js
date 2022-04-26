@@ -99,7 +99,10 @@ function listTabs() {
 
 function createGoDiagram({nodes, connections}) {
     var $ = go.GraphObject.make;
-    myDiagram = $(go.Diagram, "myDiagramDiv");
+    myDiagram = $(go.Diagram, "myDiagramDiv",
+    {
+        layout: $(go.CircularLayout)
+    });
 
     myDiagram.nodeTemplate =
     $(go.Node, "Auto",
