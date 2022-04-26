@@ -11,7 +11,7 @@
 
       <div class="panel">
         <div class="panel-section panel-section-header">
-         <div class="text-section-header">Wikipedia Tabs to Wikidata</div>
+         <div class="text-section-header">WikiTab Concept Map</div>
         </div>
     <!--
     Define the other menu items
@@ -19,11 +19,17 @@
 
         <div class="switch-tabs">
 
-         <ul id="tabs-list"></div>
+          <ul id="tabs-list"></ul>
+
+         <!-- The DIV for a Diagram needs an explicit size or else we will not see anything.-->
+          <div id="myDiagramDiv"
+            style="width:600px; height:400px; background-color: #DAE4E4;">
+          </div>
 
         </div>
       </div>
 
+      <script src="go-debug.js"></script>
       <script src="conceptboard.js"></script>
 
     </body>
