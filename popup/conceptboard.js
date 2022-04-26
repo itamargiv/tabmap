@@ -42,7 +42,7 @@ function createTabList(tabs) {
 
     for (let tab of tabs) {
         let itemNode = document.createElement('li');
-        itemNode.textContent = tab.title;
+        itemNode.textContent = tab.title + ' (' + tab.qid + ')';
         itemNode.classList.add('article-tab');
         tabNodes.items.appendChild(itemNode);
     }
@@ -68,7 +68,6 @@ async function getWikibaseIds(tabs) {
         })));
     
     const data = await Promise.all(Object.entries(titleMap).map(mapRequests));
-
     return data.flat();
 }
 
